@@ -13,6 +13,11 @@ class ViewController: NSViewController, NSAlertDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let userName = NSUserName()
+        let fullUserName = NSFullUserName()
+        print(userName)
+        print(fullUserName)
+        
     }
     
     override var representedObject: Any? {
@@ -22,7 +27,7 @@ class ViewController: NSViewController, NSAlertDelegate {
     
     @IBAction func tappedDeploy(_ sender: NSButton) {
         let alert = NSAlert()
-        alert.messageText = "タイトル"
+        alert.messageText = "ようこそ、\(NSFullUserName()) さん"
         alert.informativeText = "メッセージ"
         alert.icon = NSImage(named: "")
         alert.addButton(withTitle: "OK")
@@ -34,6 +39,22 @@ class ViewController: NSViewController, NSAlertDelegate {
         if case .alertFirstButtonReturn = response {
             print(textView.string)
         }
+    }
+    
+    private func shell(_ args: String) -> String {
+        var outstr = ""
+        let task = Process()
+        task.launchPath = "/bin/sh"
+        task.arguments = ["-c", args]
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        task.launch()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        if let output = String(data: data, encoding: .utf8) {
+            outstr = output as String
+        }
+        task.waitUntilExit()
+        return outstr
     }
 }
 
